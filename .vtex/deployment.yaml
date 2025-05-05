@@ -1,19 +1,19 @@
-- name: webhook-zendesk-glean
-  description: Webhook to send question to glean and answer them in zendesk tickets
+- name: ZendeskGleanWebhookFunction
+  description: Lambda function to process Zendesk webhooks and send them to Glean
   build:
     provider: dkcicd
     pipelines:
-      - name: node-ci-v1
+      - name: dk-iac-deploy-infra-v1
         parameters:
-          nodeVersion: 20-bookworm
-        when:
-          - event: push
-            source: branch
-      - name: lambda-deploy-v1
-        parameters:
-          functionName: my-lambda-function
-          region: us-east-1
-          role: arn:aws:iam::<account-id>:role/lambda-role
+          gitRepositoryName: glean  
+          gitRepositoryOwner: vtex                      
+          gitBranchName: main                           
+          projectName: techops/zendesk-glean-lambda     
+          stackName: dev                                
+          projectPath: .vtex/infrastructure/lambda                           
+          awsAccountId: 558830342743                  
+          awsRegion: us-east-1
+          awsRoleName: dk-iac-558830342743              
         when:
           - event: push
             source: branch
