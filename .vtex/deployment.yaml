@@ -10,6 +10,7 @@
           projectPath: ".vtex/infrastructure/lambda"                           
           awsAccountId: '558830342743'
           awsRegion: us-east-1
+          awsRoleName: dk-iac-558830342743
         when:
           - event: push
             source: branch
