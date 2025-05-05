@@ -1,0 +1,19 @@
+- name: webhook-zendesk-glean
+  description: Webhook to send question to glean and answer them in zendesk tickets
+  build:
+    provider: dkcicd
+    pipelines:
+      - name: node-ci-v1
+        parameters:
+          nodeVersion: 20-bookworm
+        when:
+          - event: push
+            source: branch
+      - name: lambda-deploy-v1
+        parameters:
+          functionName: my-lambda-function
+          region: us-east-1
+          role: arn:aws:iam::<account-id>:role/lambda-role
+        when:
+          - event: push
+            source: branch
