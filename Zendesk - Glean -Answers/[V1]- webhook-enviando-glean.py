@@ -270,7 +270,7 @@ def processa_ticket(data):
     response_from_glean = ask_glean(texto_ticket_completo, application_id)
 
     if response_from_glean:
-        #post_internal_note_to_zendesk(ticket_id, response_from_glean)
+        post_internal_note_to_zendesk(ticket_id, response_from_glean)
         salvar_resposta_em_txt(ticket_id, response_from_glean)
 
 ##--------------------------------------------------------------------------##
