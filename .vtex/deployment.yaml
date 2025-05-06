@@ -1,0 +1,34 @@
+- name: ZendeskGleanWebhookFunction
+  description: Lambda function to process Zendesk webhooks and send them to Glean
+  build:
+    provider: dkcicd
+    pipelines:
+
+      - name: dk-iac-deploy-infra-v1
+        parameters:
+          projectName: techops/zendesk-glean-lambda
+          stackName: vtex/dev
+          projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+          awsAccountId: '558830342743'
+          awsRegion: us-east-1
+          awsRoleName: dk-cicd-558830342743
+        when:
+          - event: push
+            path:
+              - .vtex/infrastructure/**
+            source: branch
+            regex: ^(main)$
+
+      - name: dk-iac-preview-infra-v1
+        parameters:
+          projectName: techops/zendesk-glean-lambda
+          stackName: vtex/dev
+          projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+          awsAccountId: '558830342743'
+          awsRegion: us-east-1
+          awsRoleName: dk-cicd-558830342743
+        when:
+          - event: push
+            path:
+              - .vtex/infrastructure/**
+            source: branch

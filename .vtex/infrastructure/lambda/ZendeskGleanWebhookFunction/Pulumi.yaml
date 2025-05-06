@@ -1,0 +1,36 @@
+name: ZendeskGleanWebhookFunction
+runtime: yaml
+resources:
+  ZendeskGleanWebhookFunction:
+    type: vtex:lambda:Lambda
+    properties:
+      tags:
+        Group: TechOps
+        ApplicationName: ZendeskGleanIntegration
+        Environment: prd
+        Product: Glean
+        Owner: hira
+      architectures: []
+      layers: []
+      vpcConfig:
+        securityGroupIds: []
+        subnetIds: []
+      description: >-
+        Entry point for Zendesk webhooks and receives the incoming payload via
+        API Gateway → hands it off (async) to your existing Flask‐based
+        processor
+      environment:
+        ZENDESK_SUBDOMAIN: vtexhelp
+        ZENDESK_EMAIL: leonardo.guimaraes@vtex.com/token
+        ZENDESK_API_TOKEN: RpfUAFN6AyQ5m00maAS66tN19q606KJjRJPdbPxA
+        GLEAN_API_URL: https://vtex-be.glean.com/rest/api/v1/chat
+        GLEAN_FEEDBACK_URL: https://vtex-be.glean.com/rest/api/v1/feedback
+        GLEAN_TOKEN: E+NioSfTeuzMrEMg6ElNzPyA6kQcr+zrBsE3GClyFmc=
+      ephemeralStorageSize: 512
+      memorySize: 512
+      handler: lambda_zendesk_glean.lambda_handler
+      name: ZendeskGleanWebhookFunction
+      timeout: 60
+      runtime: python3.9
+      s3Bucket: glean-zendesk-integration
+      s3Key: lambda_zendesk_glean.zip
