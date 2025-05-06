@@ -22,7 +22,7 @@ resources:
         GLEAN_API_URL: https://vtex-be.glean.com/rest/api/v1/chat
         GLEAN_FEEDBACK_URL: https://vtex-be.glean.com/rest/api/v1/feedback
         GLEAN_TOKEN: E+NioSfTeuzMrEMg6ElNzPyA6kQcr+zrBsE3GClyFmc=
-      ephemeralStorageSize: 128
+      ephemeralStorageSize: 512
       memorySize: 512
       handler: lambda_zendesk_glean.lambda_handler
       name: ZendeskGleanWebhookFunction
