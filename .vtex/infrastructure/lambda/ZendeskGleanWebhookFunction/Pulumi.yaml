@@ -6,6 +6,10 @@ resources:
     properties:
       tags:
         Group: TechOps
+        ApplicationName: ZendeskGleanIntegration
+        Environment: prd
+        Product: Glean
+        Owner: hira
       architectures: []
       layers: []
       vpcConfig:
