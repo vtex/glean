@@ -25,4 +25,6 @@ GLEAN_FEEDBACK_URL = os.getenv('GLEAN_FEEDBACK_URL')
 GLEAN_TOKEN = os.getenv('GLEAN_TOKEN')
 PS_ID=os.getenv('PS_ID')
 NON_PS_ID=os.getenv('NON_PS_ID')
+print("NON_PS_ID", os.getenv("NON_PS_ID"))
 print("GLEAN_API_URL:", os.getenv("GLEAN_API_URL"))
+EXCEL_PATH = "tokens.xlsx"

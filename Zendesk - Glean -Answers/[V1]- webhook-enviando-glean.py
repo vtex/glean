@@ -120,6 +120,7 @@ def ask_glean(texto_ticket_completo, application_id): # Envia o texto do ticket 
         f.write("Payload enviado para a Glean:\n\n")
         f.write(json.dumps(payload, indent=2)) 
     response = requests.post(GLEAN_API_URL, headers=GLEAN_HEADERS, json=payload, stream=True) # Envia o payload para a Glean
+    print(response.status_code) # Imprime o status da resposta
     if response.status_code == 200: # Verifica se a resposta foi bem sucedida
         reply,token= process_response_message_stream(response) # Processa a resposta da Glean, ignorando a segunda variável de token
         return reply, token # Retorna a resposta
@@ -150,6 +151,7 @@ def process_response_message_stream(response):
     resposta_texto = ''
     todas_citacoes = []
     token = None
+    print("Iniciando o processamento da resposta da Glean...")
     for line in response.iter_lines():
         if line:
             line_json = json.loads(line)
@@ -164,12 +166,14 @@ def process_response_message_stream(response):
     # Remover duplicatas com base na URL
     citacoes_unicas = []
     urls_vistas = set()
+    print("Removendo duplicatas...")
     for citacao in todas_citacoes:
         url = citacao.get("url") or citacao.get("sourceDocument", {}).get("url")
         if url and url not in urls_vistas:
             urls_vistas.add(url)
             citacoes_unicas.append(citacao)
     # Montar seção de fontes se houver citações únicas
+    print("Montando seção de fontes...")
     if citacoes_unicas:
         resposta_texto += "\n\n🔍 *Fontes mencionadas pela Glean:*\n"
         for i, citacao in enumerate(citacoes_unicas, start=1):
@@ -192,7 +196,7 @@ def process_response_message_stream(response):
                 resposta_texto += f"{i}. [{fonte_texto}]({url})\n"
             else:
                 resposta_texto += f"{i}. {fonte_texto}\n"
-
+    print("Processamento concluído.")
     return resposta_texto, token
 ##--------------------------------------------------------------------------##
 def process_message_fragment(message): # Processa uma mensagem fragmentada e retorna o texto e as citações
@@ -239,7 +243,8 @@ def processa_ticket(data):
     group_name = data.get("ticket", {}).get("group", "").lower()
     print("ticket_id extraído:", ticket_id)
     print("grupo:", group_name)
-    
+    print("NON_PS_ID:", NON_PS_ID)
+    print("PS_ID:", PS_ID)
     if not ticket_id:
         return
     
@@ -247,7 +252,7 @@ def processa_ticket(data):
         application_id = PS_ID
     else:
         application_id = NON_PS_ID
-    
+    print("application_id:", application_id)
     ticket = buscar_dados_completos_do_ticket(ticket_id)
     comentarios = buscar_comentarios_do_ticket(ticket_id)
     texto_ticket_completo = gerar_texto_completo_do_ticket(ticket_id, ticket, comentarios)
@@ -267,7 +272,7 @@ def salvar_token_em_excel(ticket_id, token, arquivo="tokens.xlsx"):
     else:
         wb = Workbook()
         ws = wb.active
-        ws.append(["Ticket ID", "Tracking Token"])  # cabeçalho
+        ws.append(["ticket_id", "tracking_token"])  # cabeçalho
 
     ws.append([ticket_id, token])
     wb.save(arquivo)
@@ -278,7 +283,6 @@ def salvar_token_em_excel(ticket_id, token, arquivo="tokens.xlsx"):
 @app.route("/zendesk-to-glean", methods=["POST"]) # Rota do webhook com método de post
 def zendesk_webhook():
     data = request.json
-    print("GLEAN_API_URL:", os.getenv("GLEAN_API_URL"))
     print("Payload recebido:")
     print(json.dumps(data, indent=2))
 
