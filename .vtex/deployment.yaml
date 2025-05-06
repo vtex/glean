@@ -28,7 +28,7 @@
           awsRegion: us-east-1
           awsRoleName: dk-cicd-558830342743
         when:
-          - event: pull_request
+          - event: push
             path:
               - .vtex/infrastructure/**
             source: branch
