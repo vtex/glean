@@ -16,6 +16,39 @@
         versionTag: '{{ ref_name }}'
       when:
       - event: push
-        source: branch
+        source: tag
       runtime:
         serviceAccountName: dk-cicd-iac
+
+    - name: dk-iac-preview-infra-v1
+      parameters:
+        projectName: techops/zendesk-glean-lambda
+        stackName: vtex/dev
+        projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+        awsAccountId: '558830342743'
+        awsRegion: us-east-1
+      runtime:
+        serviceAccountName: dk-cicd-iac
+      when:
+        - event: push
+          path:
+            - .vtex/infrastructure/**
+          source: branch
+          regex: ^(?!main$).*
+
+    - name: dk-iac-deploy-infra-v1
+      parameters:
+        projectName: techops/zendesk-glean-lambda
+        stackName: vtex/dev
+        projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+        awsAccountId: '558830342743'
+        awsRegion: us-east-1
+      runtime:
+        serviceAccountName: dk-cicd-iac
+      when:
+        - event: push
+          path:
+            - .vtex/infrastructure/**
+          source: branch
+          regex: ^(main)$
+      

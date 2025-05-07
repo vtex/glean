@@ -30,4 +30,4 @@ resources:
       timeout: 60
       runtime: python3.9
       s3Bucket: glean-zendesk-integration
-      s3Key: lambda_zendesk_glean/v0.2.zip
+      s3Key: lambda_zendesk_glean/v0.3.zip
