@@ -3,6 +3,21 @@
   build:
     provider: dkcicd
     pipelines:
+      - name: lambda-build-v1
+        parameters:
+          pulumiProjectPath: ".vtex/infrastructure/ZendeskGleanWebhookFunction"
+          awsAccountId: '053131491888'
+          projectPath: CardTokenVault.Lambda.Import
+          projectName: techops/zendesk-glean-lambda
+          s3BucketName: glean-zendesk-integration
+          versionTag: '{{ ref_name }}'
+          runtimeVersion: 8.0--alpine
+          packageManager: yarn
+          command: publish
+        when:
+          - event: push
+            source: tag
+            regex: .*
 
       - name: dk-iac-deploy-infra-v1
         parameters:
