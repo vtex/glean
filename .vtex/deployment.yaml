@@ -3,22 +3,6 @@
   build:
     provider: dkcicd
     pipelines:
-      - name: lambda-build-v1
-        parameters:
-          pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
-          awsAccountId: '558830342743'
-          projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
-          projectName: techops/zendesk-glean-lambda
-          s3BucketName: glean-zendesk-integration
-          versionTag: '{{ ref_name }}'
-          runtimeVersion: 8.0-alpine
-          packageManager: yarn
-          command: publish
-        when:
-          - event: push
-            source: tag
-            regex: .*
-
       - name: dk-iac-deploy-infra-v1
         parameters:
           projectName: techops/zendesk-glean-lambda
@@ -27,12 +11,15 @@
           awsAccountId: '558830342743'
           awsRegion: us-east-1
           awsRoleName: dk-cicd-558830342743
+        runtime:
+          serviceAccountName: dk-cicd-iac
         when:
           - event: push
             path:
               - .vtex/infrastructure/**
             source: branch
             regex: ^(main)$
+        
 
       - name: dk-iac-preview-infra-v1
         parameters:
@@ -42,9 +29,12 @@
           awsAccountId: '558830342743'
           awsRegion: us-east-1
           awsRoleName: dk-cicd-558830342743
+        runtime:
+          serviceAccountName: dk-cicd-iac
         when:
           - event: push
             path:
               - .vtex/infrastructure/**
             source: branch
             regex: ^(?!main$).*
+        
