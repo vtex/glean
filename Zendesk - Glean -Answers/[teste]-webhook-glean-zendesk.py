@@ -14,7 +14,7 @@ from openpyxl import Workbook, load_workbook
 ##--------------------------------------------------------------------------##
 ## Setup das configurações globais e inicialização do Flask
 app = Flask(__name__)
-from config import ZENDESK_DOMAIN, ZENDESK_EMAIL, ZENDESK_TOKEN, GLEAN_API_URL, GLEAN_TOKEN, PS_ID, NON_PS_ID # Importa as variáveis de ambiente do arquivo config.py
+from config import *  # Importa as variáveis de ambiente do arquivo config.py
 
 # Headers para Glean e Zendesk
 GLEAN_HEADERS = {
@@ -49,12 +49,8 @@ def buscar_comentarios_do_ticket(ticket_id): # Busca os comentários do ticket v
 ##--------------------------------------------------------------------------##
 def gerar_texto_completo_do_ticket(ticket_id, ticket, comentarios): #pega as informaçoes de id e de comentários e gera um texto para a glean
     subject = ticket.get("subject", "Sem assunto") # Inicializa assunto do ticket
-    priority = ticket.get("priority", "Sem prioridade") # Inicializa Prioridade do ticket
-    status = ticket.get("status", "Sem status") # Inicializa Status do ticket
     conteudo = f"-------------\nTicket ID: {ticket_id}\n" # Escreve ID do ticket
     conteudo += f" - subject: {subject}\n" # Escreve Assunto do ticket
-    conteudo += f" - priority: {priority}\n" # Escreve Prioridade do ticket
-    conteudo += f" - status: {status}\n" # Escreve Status do ticket
 
     for idx, comentario in enumerate(comentarios, start=1):# Itera pelos comentários
         corpo = comentario.get("body", "").replace("\n", " ").strip()
@@ -80,7 +76,7 @@ def get_user_info(user_id):
     email = user_data.get("email", "Sem email") # Pega o email do usuário
     groups_url = f"https://{ZENDESK_DOMAIN}.zendesk.com/api/v2/users/{user_id}/groups.json"
     response = requests.get(groups_url, auth=auth)
-    grupos = [] # Inicializa a lista de grupos
+    groups = [] # Inicializa a lista de grupos
     if response.status_code == 200:
         groups = response.json().get("groups", [])
         group_names = [g.get("name", "Sem nome") for g in groups]
@@ -94,15 +90,10 @@ def ask_glean(texto_ticket_completo, application_id): # Envia o texto do ticket 
     "Você receberá o conteúdo de um ticket do Zendesk. A estrutura será assim:\n\n"
     "-------------\nTicket ID: <número>\n"
     " - subject: <assunto do ticket>\n"
-    " - priority: <prioridade>\n"
-    " - status: <status>\n"
     " - comentário 1 (<autor> | Grupos: <grupos>): <conteúdo>\n"
     " - comentário 2 (<autor> | Grupos: <grupos>): <conteúdo>\n"
     "...\n\n"
     "Com base nisso, gere uma sugestão de resposta para resolver o problema do cliente de forma clara e útil.\n\n"
-    "A resposta deve estar no mesmo idioma em que o ticket está sendo discutido.\n\n"
-    "A resposta deve ser clara e útil, evitando jargões técnicos desnecessários.\n\n"
-    "A resposta deve ser breve, mas informativa, evitando longas explicações.\n\n"
     "A resposta deve ser educada e profissional, mantendo um tom amigável.\n\n"
     ) # fim do prompt de sistema
     payload = {
@@ -120,7 +111,7 @@ def ask_glean(texto_ticket_completo, application_id): # Envia o texto do ticket 
         f.write("Payload enviado para a Glean:\n\n")
         f.write(json.dumps(payload, indent=2)) 
     response = requests.post(GLEAN_API_URL, headers=GLEAN_HEADERS, json=payload, stream=True) # Envia o payload para a Glean
-    print(response.status_code) # Imprime o status da resposta
+    #print(response.status_code) # Imprime o status da resposta
     if response.status_code == 200: # Verifica se a resposta foi bem sucedida
         reply,token= process_response_message_stream(response) # Processa a resposta da Glean, ignorando a segunda variável de token
         return reply, token # Retorna a resposta
@@ -238,20 +229,43 @@ def post_internal_note_to_zendesk(ticket_id, note_text):
     except Exception as e:
         print(f"Exceção ao postar resposta no Zendesk: {e}")
 ##--------------------------------------------------------------------------##
+def buscar_formulario_para_tickets(ticket_id):
+        # 1. Buscar os dados do ticket
+        url = f"https://{ZENDESK_DOMAIN}.zendesk.com/api/v2/tickets/{ticket_id}.json"
+        auth = (ZENDESK_EMAIL, ZENDESK_TOKEN) # Autenticação com email e token
+        resp = requests.get(url, auth=auth, headers=ZENDESK_HEADERS)
+        if resp.status_code == 200:
+            ticket = resp.json().get("ticket", {})
+            ticket_form_id = ticket.get("ticket_form_id")
+            return ticket_form_id
+        else:
+            print(f"❌ Erro ao buscar ticket ID {ticket_id}: {resp.status_code} - {resp.text}")
+            return None
+##--------------------------------------------------------------------------##
 def processa_ticket(data):
     ticket_id = data.get("ticket", {}).get("id")
-    group_name = data.get("ticket", {}).get("group", "").lower()
-    print("ticket_id extraído:", ticket_id)
-    print("grupo:", group_name)
-    print("NON_PS_ID:", NON_PS_ID)
-    print("PS_ID:", PS_ID)
+    form_id = str(buscar_formulario_para_tickets(ticket_id))
+    #print("ticket_id extraído:", ticket_id)
+    print("form_id:", form_id, type(form_id))
+    print("FSE_ZENDESK_ID:", FSE_ZENDESK_ID, type(FSE_ZENDESK_ID))
+    print("PS_ZENDESK_ID:", PS_ZENDESK_ID, type(PS_ZENDESK_ID))
+    print("FIN_ZENDESK_ID:", FIN_ZENDESK_ID, type(FIN_ZENDESK_ID))
+    #print("PS_ID:", PS_ID)
+    #print("FIN_ID:", FIN_ID)
     if not ticket_id:
         return
-    
-    if "ps" in group_name:
+    if form_id == PS_ZENDESK_ID: # Verifica se o ID do formulário é um dos IDs de Product Support
+        print("ENTROU 1")
         application_id = PS_ID
+    elif form_id == FSE_ZENDESK_ID: # Verifica se o ID do formulário é um dos IDs de FSE
+        print("ENTROU 2")   
+        application_id = FSE_ID
+    elif form_id == FIN_ZENDESK_ID: # Verifica se o ID do formulário é um dos IDs de Finance
+        print("ENTROU 3")
+        application_id = FIN_ID    
     else:
-        application_id = NON_PS_ID
+        print("ENTROU 4")
+        application_id = []# Se não for nenhum dos IDs, não faz nada
     print("application_id:", application_id)
     ticket = buscar_dados_completos_do_ticket(ticket_id)
     comentarios = buscar_comentarios_do_ticket(ticket_id)
