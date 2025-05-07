@@ -9,6 +9,7 @@ import threading
 
 warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
 import os
+from openpyxl import Workbook, load_workbook
 
 ##--------------------------------------------------------------------------##
 ## Setup das configurações globais e inicialização do Flask
@@ -29,10 +30,7 @@ def buscar_dados_completos_do_ticket(ticket_id): # Busca os dados completos do t
     url = f"https://{ZENDESK_DOMAIN}.zendesk.com/api/v2/tickets/{ticket_id}.json" # URL da API do Zendesk para pegar o ticket
     auth = (ZENDESK_EMAIL, ZENDESK_TOKEN) # Autenticação com email e token
     response = requests.get(url, auth=auth) # Faz a requisição GET com autenticação
-    ticket = response.json().get("ticket", {}) # Pega os dados do ticket em um json
-    #print("Busca começando:")
     if response.status_code == 200: # Verifica se a requisição foi bem sucedida
-        #print("Ticket funcionando")
         return response.json()["ticket"] # Retorna os dados do ticket
         
     else: # Se a requisição não foi bem sucedida
@@ -43,9 +41,7 @@ def buscar_comentarios_do_ticket(ticket_id): # Busca os comentários do ticket v
     url = f"https://{ZENDESK_DOMAIN}.zendesk.com/api/v2/tickets/{ticket_id}/comments.json" # URL da API do Zendesk para pegar os comentários do ticket
     auth = (ZENDESK_EMAIL, ZENDESK_TOKEN) # Autenticação com email e token
     response = requests.get(url, headers=ZENDESK_HEADERS, auth=auth) #Extrai os comentários dos tickets
-    #print("Comentários puxados")
     if response.status_code == 200:  #a resposta sendo positiva, retornamos
-        #print("Comentários funcionando")
         return response.json().get("comments", [])
     else: #retorna vazio caso exista erro
         print(f"Erro ao buscar comentários: {response.status_code}") #printa no terminal
@@ -123,19 +119,11 @@ def ask_glean(texto_ticket_completo, application_id): # Envia o texto do ticket 
     with open(filename, "w", encoding="utf-8") as f:
         f.write("Payload enviado para a Glean:\n\n")
         f.write(json.dumps(payload, indent=2)) 
-    #print("Enviando para Glean com payload:")
-    #print(json.dumps(payload, indent=2))
     response = requests.post(GLEAN_API_URL, headers=GLEAN_HEADERS, json=payload, stream=True) # Envia o payload para a Glean
-    #print("Resposta da Glean:")
-    #print(response.text) # Imprime a resposta da Glean
-    #print("--------------------------------------------------")
+    print(response.status_code) # Imprime o status da resposta
     if response.status_code == 200: # Verifica se a resposta foi bem sucedida
-        reply, _ = process_response_message_stream(response) # Processa a resposta da Glean, ignorando a segunda variável de token
-        #print("\n🔄 Resposta crua da Glean:")
-        #for line in response.iter_lines():
-           # if line:
-                #print(line.decode('utf-8'))  # imprime cada linha crua
-        return reply # Retorna a resposta
+        reply,token= process_response_message_stream(response) # Processa a resposta da Glean, ignorando a segunda variável de token
+        return reply, token # Retorna a resposta
 
     else: # Se a resposta não foi bem sucedida
         print("Erro Glean:", response.status_code, response.text) # Imprime o erro
@@ -163,28 +151,29 @@ def process_response_message_stream(response):
     resposta_texto = ''
     todas_citacoes = []
     token = None
-
+    print("Iniciando o processamento da resposta da Glean...")
     for line in response.iter_lines():
         if line:
             line_json = json.loads(line)
+           # ✅ Salva o token apenas se ainda não foi capturado
             messages = line_json.get('messages', [])
-            token = line_json.get('chatSessionTrackingToken')
-
             for msg in messages:
+                if token is None:
+                    token = msg.get('messageTrackingToken')
                 texto, citacoes = process_message_fragment(msg)
                 resposta_texto += texto
                 todas_citacoes += citacoes
-
     # Remover duplicatas com base na URL
     citacoes_unicas = []
     urls_vistas = set()
+    print("Removendo duplicatas...")
     for citacao in todas_citacoes:
         url = citacao.get("url") or citacao.get("sourceDocument", {}).get("url")
         if url and url not in urls_vistas:
             urls_vistas.add(url)
             citacoes_unicas.append(citacao)
-
     # Montar seção de fontes se houver citações únicas
+    print("Montando seção de fontes...")
     if citacoes_unicas:
         resposta_texto += "\n\n🔍 *Fontes mencionadas pela Glean:*\n"
         for i, citacao in enumerate(citacoes_unicas, start=1):
@@ -207,9 +196,8 @@ def process_response_message_stream(response):
                 resposta_texto += f"{i}. [{fonte_texto}]({url})\n"
             else:
                 resposta_texto += f"{i}. {fonte_texto}\n"
-
+    print("Processamento concluído.")
     return resposta_texto, token
-
 ##--------------------------------------------------------------------------##
 def process_message_fragment(message): # Processa uma mensagem fragmentada e retorna o texto e as citações
     text = '' # Inicializa o texto vazio
@@ -255,7 +243,8 @@ def processa_ticket(data):
     group_name = data.get("ticket", {}).get("group", "").lower()
     print("ticket_id extraído:", ticket_id)
     print("grupo:", group_name)
-    
+    print("NON_PS_ID:", NON_PS_ID)
+    print("PS_ID:", PS_ID)
     if not ticket_id:
         return
     
@@ -263,22 +252,37 @@ def processa_ticket(data):
         application_id = PS_ID
     else:
         application_id = NON_PS_ID
-    
+    print("application_id:", application_id)
     ticket = buscar_dados_completos_do_ticket(ticket_id)
     comentarios = buscar_comentarios_do_ticket(ticket_id)
     texto_ticket_completo = gerar_texto_completo_do_ticket(ticket_id, ticket, comentarios)
-    response_from_glean = ask_glean(texto_ticket_completo, application_id)
+    response_from_glean, token = ask_glean(texto_ticket_completo, application_id)
 
+    # 📝 Salvar token e ticket_id no Excel
+    if token:
+        salvar_token_em_excel(ticket_id, token)
     if response_from_glean:
-        #post_internal_note_to_zendesk(ticket_id, response_from_glean)
+        post_internal_note_to_zendesk(ticket_id, response_from_glean)
         salvar_resposta_em_txt(ticket_id, response_from_glean)
+##--------------------------------------------------------------------------##
+def salvar_token_em_excel(ticket_id, token, arquivo="tokens.xlsx"):
+    if os.path.exists(arquivo):
+        wb = load_workbook(arquivo)
+        ws = wb.active
+    else:
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["ticket_id", "tracking_token"])  # cabeçalho
 
+    ws.append([ticket_id, token])
+    wb.save(arquivo)
+    print(f"✅ Token salvo para o ticket {ticket_id}: {token}")
+##--------------------------------------------------------------------------##
 ##--------------------------------------------------------------------------##
 ## Função que recebe o webhook do Zendesk e chama as outras funções
 @app.route("/zendesk-to-glean", methods=["POST"]) # Rota do webhook com método de post
 def zendesk_webhook():
     data = request.json
-    print("GLEAN_API_URL:", os.getenv("GLEAN_API_URL"))
     print("Payload recebido:")
     print(json.dumps(data, indent=2))
 
