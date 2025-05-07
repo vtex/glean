@@ -9,7 +9,7 @@
         pulumiProjectName: techops/zendesk-glean-lambda
         pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
         awsAccountId: '053131491888'
-        projectPath: src/VTEX.OrderManagement.TestIntegration.LambdaFunction
+        projectPath: glean/Zendesk - Glean -Answers/
         projectName: techops/zendesk-glean-lambda
         s3BucketName: glean-zendesk-integration
         versionTag: '{{ ref_name }}'
