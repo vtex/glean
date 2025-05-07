@@ -15,7 +15,7 @@ resources:
       vpcConfig:
         securityGroupIds: []
         subnetIds: []
-      description: Entry point for Zendesk webhooks and receives the incoming payload via API Gateway hands it off (async) to your existing Flask‐based processor
+      description: Entry point for Zendesk webhooks and receives the incoming payload via API Gateway hands it off (async) to your existing Flask based processor
       environment:
         ZENDESK_SUBDOMAIN: vtexhelp
         ZENDESK_EMAIL: leonardo.guimaraes@vtex.com/token
