@@ -5,16 +5,16 @@
     pipelines:
     - name: lambda-build-v1
       parameters:
-        pulumiStackName: vtex/dev
-        pulumiProjectName: ZendeskGleanWebhookFunction
-        pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
-        awsAccountId: '053131491888'
-        projectPath: glean/Zendesk - Glean -Answers/
+        projectPath: Zendesk - Glean -Answers\lambda_zendesk_glean.py
+        awsAccountId: '558830342743'
+        awsRegion: us-east-1
+        rentimeVersion: 3.10-bullseye
+        command: install
         projectName: techops/zendesk-glean-lambda
+        pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
         s3BucketName: glean-zendesk-integration
         versionTag: '{{ ref_name }}'
-        runtimeVersion: python3.9
-        command: install
+
       when:
       - event: push
       runtime:
