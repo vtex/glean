@@ -29,6 +29,5 @@ resources:
       name: ZendeskGleanWebhookFunction
       timeout: 60
       runtime: python3.9
-      role: arn:aws:iam::053131491888:role/dk-cicd-558830342743
       s3Bucket: glean-zendesk-integration
       s3Key: lambda_zendesk_glean.zip
