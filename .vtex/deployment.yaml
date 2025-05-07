@@ -3,6 +3,23 @@
   build:
     provider: dkcicd
     pipelines:
+    - name: lambda-build-v1
+      parameters:
+        pulumiStackName: vtex/dev
+        pulumiProjectName: techops/zendesk-glean-lambda
+        pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
+        awsAccountId: '053131491888'
+        projectPath: src/VTEX.OrderManagement.TestIntegration.LambdaFunction
+        projectName: techops/zendesk-glean-lambda
+        s3BucketName: glean-zendesk-integration
+        versionTag: '{{ ref_name }}'
+        runtimeVersion: python3.12
+        command: install
+      when:
+      - event: push
+      runtime:
+        serviceAccountName: dk-cicd-iac
+        
       - name: dk-iac-deploy-infra-v1
         parameters:
           projectName: techops/zendesk-glean-lambda
@@ -35,4 +52,6 @@
               - .vtex/infrastructure/**
             source: branch
             regex: ^(?!main$).*
+
+
         
