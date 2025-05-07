@@ -5,13 +5,13 @@
     pipelines:
       - name: lambda-build-v1
         parameters:
-          pulumiProjectPath: ".vtex/infrastructure/ZendeskGleanWebhookFunction"
-          awsAccountId: '053131491888'
-          projectPath: CardTokenVault.Lambda.Import
+          pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
+          awsAccountId: '558830342743'
+          projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
           projectName: techops/zendesk-glean-lambda
           s3BucketName: glean-zendesk-integration
           versionTag: '{{ ref_name }}'
-          runtimeVersion: 8.0--alpine
+          runtimeVersion: 8.0-alpine
           packageManager: yarn
           command: publish
         when:
@@ -47,3 +47,4 @@
             path:
               - .vtex/infrastructure/**
             source: branch
+            regex: ^(?!main$).*
