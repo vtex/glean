@@ -6,14 +6,14 @@
     - name: lambda-build-v1
       parameters:
         pulumiStackName: vtex/dev
-        pulumiProjectName: techops/zendesk-glean-lambda
+        pulumiProjectName: ZendeskGleanWebhookFunction
         pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
         awsAccountId: '053131491888'
         projectPath: glean/Zendesk - Glean -Answers/
         projectName: techops/zendesk-glean-lambda
         s3BucketName: glean-zendesk-integration
         versionTag: '{{ ref_name }}'
-        runtimeVersion: python3.12
+        runtimeVersion: python3.9
         command: install
       when:
       - event: push
