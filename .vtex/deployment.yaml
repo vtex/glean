@@ -8,15 +8,14 @@
         projectPath: Zendesk - Glean -Answers\lambda_zendesk_glean.py
         awsAccountId: '558830342743'
         awsRegion: us-east-1
-        rentimeVersion: 3.10-bullseye
+        runtimeVersion: 3.10-bullseye
         command: install
         projectName: techops/zendesk-glean-lambda
         pulumiProjectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"
         s3BucketName: glean-zendesk-integration
         versionTag: '{{ ref_name }}'
-
       when:
       - event: push
         source: branch
       runtime:
-        serviceAccountName: dk-cicd-iac        
+        serviceAccountName: dk-cicd-iac
