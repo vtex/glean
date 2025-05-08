@@ -8,13 +8,13 @@
         projectPath: Zendesk - Glean -Answers
         awsAccountId: '053131491888'
         awsRegion: us-east-1
-        awsRoleName: dk-cicd-iac
         runtimeVersion: 3.10-bullseye
-        command: add
+        command: install
         projectName: ZendeskGleanWebhookFunction
         pulumiProjectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction
         s3BucketName: glean-zendesk-integration
         versionTag: '{{ ref_name }}'
+        packageManager: pip
       when:
       - event: push
         source: tag
