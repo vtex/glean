@@ -17,6 +17,7 @@
       when:
       - event: push
         source: tag
+        regex: ^v(\d+)\.(\d+)\.(\d+)$
       runtime:
         serviceAccountName: dk-cicd-iac
 
