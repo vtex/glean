@@ -1,7 +1,7 @@
 name: ZendeskGleanWebhookFunction
 runtime: yaml
 resources:
-  ZendeskGleanWebhookFunction:
+  lambda:
     type: vtex:lambda:Lambda
     properties:
       tags:
