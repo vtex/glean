@@ -30,4 +30,4 @@ resources:
       timeout: 60
       runtime: python3.9
       s3Bucket: glean-zendesk-integration
-      s3Key: glean/ZendeskGleanWebhookFunction/v1.0.13-ZendeskGleanWebhookFunction.zip
+      s3Key: glean/ZendeskGleanWebhookFunction/v1.0.14-ZendeskGleanWebhookFunction.zip
