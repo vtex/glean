@@ -9,8 +9,8 @@
         awsAccountId: '053131491888'
         awsRegion: us-east-1
         awsRoleName: dk-cicd-iac
-        runtimeVersion: 6.0--alpine
-        command: build
+        runtimeVersion: 3.10-bullseye
+        command: add
         projectName: ZendeskGleanWebhookFunction
         pulumiProjectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction
         s3BucketName: glean-zendesk-integration
