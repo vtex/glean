@@ -1,10 +1,9 @@
 import pandas as pd
-from flask import Flask, request, jsonify
 import requests
+from flask import Flask, request, jsonify
+from config import EXCEL_PATH, GLEAN_TOKEN, GLEAN_FEEDBACK_URL
 
 app = Flask(__name__)
-
-from config import GLEAN_FEEDBACK_URL, GLEAN_TOKEN, EXCEL_PATH
 
 def buscar_tracking_token(ticket_id):
     try:
@@ -21,28 +20,37 @@ def buscar_tracking_token(ticket_id):
         return []
 
 def enviar_feedback_para_glean(tracking_token, feedback):
-    evento = {
+    event = {
         "positive": "UPVOTE",
         "negative": "DOWNVOTE"
     }.get(feedback.lower())
 
-    if not evento:
+    if not event:
         print(f"❌ Tipo de feedback inválido: {feedback}")
         return
 
-    payload = {
-        "trackingTokens": [tracking_token],
-        "event": evento
-    }
+    print(f"Enviando feedback '{event}' para o token {tracking_token}...")
+
     headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {GLEAN_TOKEN}"
+        "Authorization": f"Bearer {GLEAN_TOKEN}",
+        "Content-Type": "application/json"
     }
-    response = requests.post(GLEAN_FEEDBACK_URL, json=payload, headers=headers)
-    if response.status_code == 200:
-        print(f"✅ Feedback '{evento}' enviado para token {tracking_token}.")
-    else:
-        print(f"❌ Erro ao enviar feedback para Glean: {response.status_code} - {response.text}")
+
+    body = {
+        "tracking_tokens": [tracking_token],
+        "event": event
+    }
+
+    try:
+        response = requests.post(
+            GLEAN_FEEDBACK_URL,
+            headers=headers,
+            json=body
+        )
+        response.raise_for_status()
+        print(f"✅ Feedback '{event}' enviado para token {tracking_token}.")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Erro ao enviar feedback para Glean: {e}")
 
 @app.route("/webhook/feedback", methods=["POST"])
 def receber_webhook_feedback():
@@ -50,10 +58,13 @@ def receber_webhook_feedback():
     print(f"request data: {request.data}")
     print(f"request headers: {request.headers}")
     print(f"parsed JSON: {data}")
+
     ticket = data.get("ticket", {})
     ticket_id = ticket.get("id")
     feedback = ticket.get("feedback")
+
     print(f"Recebendo feedback: {feedback} para o ticket ID: {ticket_id}")
+
     if not ticket_id or feedback not in ["positive", "negative"]:
         return jsonify({"error": "Campos 'id' e 'feedback' são obrigatórios e válidos."}), 400
 

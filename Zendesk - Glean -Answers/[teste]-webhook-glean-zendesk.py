@@ -265,7 +265,7 @@ def processa_ticket(data):
         application_id = FIN_ID    
     else:
         print("ENTROU 4")
-        application_id = []# Se não for nenhum dos IDs, não faz nada
+        application_id = FSE_ID # Se não for nenhum dos IDs, não faz nada
     print("application_id:", application_id)
     ticket = buscar_dados_completos_do_ticket(ticket_id)
     comentarios = buscar_comentarios_do_ticket(ticket_id)
