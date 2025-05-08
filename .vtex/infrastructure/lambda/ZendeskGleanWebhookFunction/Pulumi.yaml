@@ -4,12 +4,6 @@ resources:
   lambda:
     type: vtex:lambda:Lambda
     properties:
-      tags:
-        Group: TechOps
-        ApplicationName: ZendeskGleanIntegration
-        Environment: prd
-        Product: Glean
-        Owner: hira
       architectures: []
       layers: []
       vpcConfig:
