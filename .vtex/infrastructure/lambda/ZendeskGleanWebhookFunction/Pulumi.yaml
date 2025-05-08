@@ -25,9 +25,9 @@ resources:
         GLEAN_TOKEN: E+NioSfTeuzMrEMg6ElNzPyA6kQcr+zrBsE3GClyFmc=
       ephemeralStorageSize: 512
       memorySize: 512
-      handler: lambda_zendesk_glean.lambda_handler
+      handler: Zendesk-Glean-Answers/lambda_zendesk_glean.lambda_handler
       name: ZendeskGleanWebhookFunction
       timeout: 60
       runtime: python3.9
       s3Bucket: glean-zendesk-integration
-      s3Key: glean/ZendeskGleanWebhookFunction/v1.0.14-ZendeskGleanWebhookFunction.zip
+      s3Key: glean/ZendeskGleanWebhookFunction/v1.0.15-ZendeskGleanWebhookFunction.zip
