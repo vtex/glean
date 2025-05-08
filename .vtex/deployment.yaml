@@ -28,7 +28,7 @@
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
-        serviceAccountName: lambda-zendesk-glean
+        serviceAccountName: dk-cicd-iac
       when:
         - event: push
           path:
@@ -44,7 +44,7 @@
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
-        serviceAccountName: lambda-zendesk-glean
+        serviceAccountName: dk-cicd-iac
       when:
         - event: push
           path:
