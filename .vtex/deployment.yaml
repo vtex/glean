@@ -8,6 +8,7 @@
         projectPath: Zendesk - Glean -Answers
         awsAccountId: '053131491888'
         awsRegion: us-east-1
+        awsRoleName: dk-cicd-iac
         runtimeVersion: 3.10-bullseye
         command: install
         projectName: ZendeskGleanWebhookFunction
