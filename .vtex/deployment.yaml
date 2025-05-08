@@ -5,7 +5,7 @@
     pipelines:
     - name: lambda-build-v1
       parameters:
-        projectPath: Zendesk - Glean -Answers
+        projectPath: Zendesk-Glean-Answers
         awsAccountId: '053131491888'
         awsRegion: us-east-1
         runtimeVersion: 3.10-bullseye
