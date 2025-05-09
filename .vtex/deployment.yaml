@@ -24,7 +24,7 @@
       parameters:
         projectName: techops/zendesk-glean-lambda
         stackName: vtex/dev
-        projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+        projectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction                           
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
@@ -40,7 +40,7 @@
       parameters:
         projectName: techops/zendesk-glean-lambda
         stackName: vtex/dev
-        projectPath: ".vtex/infrastructure/lambda/ZendeskGleanWebhookFunction"                           
+        projectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction                           
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
