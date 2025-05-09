@@ -6,10 +6,25 @@ from flask import Flask, request # Flask
 import warnings #retira um warning de SSL do prompt
 import datetime
 import threading
-
-warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
+import logging
 import os
 from openpyxl import Workbook, load_workbook
+
+warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
+
+##--------------------------------------------------------------------------##
+## Configuração de logging básico
+if not logging.getLogger().hasHandlers():
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+##--------------------------------------------------------------------------##
+## Função para pegar as variáveis de ambiente
+def get_env_variable(var_name, default_value=None, is_secret=False):
+    value = os.environ.get(var_name, default_value)
+    if value is None and default_value is None: # Apenas erro se não houver valor padrão e a variável não for encontrada
+        logging.error(f"Variável de ambiente obrigatória '{var_name}' não definida.")
+        raise ValueError(f"Variável de ambiente obrigatória '{var_name}' não definida.")
+    return value
 
 ##--------------------------------------------------------------------------##
 ## Setup das configurações globais e inicialização do Flask
@@ -103,7 +118,7 @@ def ask_glean(texto_ticket_completo, application_id): # Envia o texto do ticket 
         make_system_message(system_prompt),
         make_content_message(text=texto_ticket_completo)
     ]))
-}
+    }
     # 📝 Salvar o payload em um arquivo .txt
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = f"envio_glean_{timestamp}.txt"
