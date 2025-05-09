@@ -11,7 +11,7 @@ import importlib.util
 
 # Dynamically load the Flask-based webhook module
 HERE = os.path.dirname(__file__)
-MODULE_PATH = os.path.join(HERE, "[V1]- webhook-enviando-glean.py")
+MODULE_PATH = os.path.join(HERE, "webhook-glean-zendesk.py")
 spec = importlib.util.spec_from_file_location("webhook_module", MODULE_PATH)
 webhook_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(webhook_module)

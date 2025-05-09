@@ -25,3 +25,9 @@ resources:
       runtime: python3.9
       s3Bucket: glean-zendesk-integration
       s3Key: glean/ZendeskGleanWebhookFunction/v1.0.15-ZendeskGleanWebhookFunction.zip
+      tags:
+        Name: ZendeskGleanWebhookFunction
+        ApplicationName: ZendeskGleanWebhookFunction
+        Environment: dev
+        Product: glean
+        Owner: techops
