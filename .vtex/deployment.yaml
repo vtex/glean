@@ -28,11 +28,11 @@
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
-        serviceAccountName: dk-cicd-iac
+        serviceAccountName: lambda-zendesk-glean
       when:
         - event: push
           path:
-            - .vtex/infrastructure/ZendeskGleanWebhookFunction
+            - .vtex/infrastructure/
           source: branch
           regex: ^(?!main$).*
 
@@ -44,7 +44,7 @@
         awsAccountId: '053131491888'
         awsRegion: us-east-1
       runtime:
-        serviceAccountName: dk-cicd-iac
+        serviceAccountName: lambda-zendesk-glean
       when:
         - event: push
           path:
