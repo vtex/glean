@@ -1,33 +1,33 @@
 name: ZendeskGleanWebhookFunction
 runtime: yaml
+description: ""
+outputs:
+  id: ""
 resources:
   lambda:
     type: vtex:lambda:Lambda
     properties:
-      architectures: []
-      layers: []
-      vpcConfig:
-        securityGroupIds: []
-        subnetIds: []
-      description: Entry point for Zendesk webhooks and receives the incoming payload via API Gateway handsoff
-      environment:
-        ZENDESK_SUBDOMAIN: vtexhelp
-        ZENDESK_EMAIL: leonardo.guimaraes@vtex.com/token
-        ZENDESK_API_TOKEN: RpfUAFN6AyQ5m00maAS66tN19q606KJjRJPdbPxA
-        GLEAN_API_URL: https://vtex-be.glean.com/rest/api/v1/chat
-        GLEAN_FEEDBACK_URL: https://vtex-be.glean.com/rest/api/v1/feedback
-        GLEAN_TOKEN: E+NioSfTeuzMrEMg6ElNzPyA6kQcr+zrBsE3GClyFmc=
-      ephemeralStorageSize: 512
-      memorySize: 512
-      handler: Zendesk-Glean-Answers/lambda_zendesk_glean.lambda_handler
       name: ZendeskGleanWebhookFunction
-      timeout: 60
+      description: Entry point for Zendesk webhooks and receives the incoming payload
+        via API Gateway handsoff
+      handler: Zendesk-Glean-Answers/lambda_zendesk_glean.lambda_handler
       runtime: python3.9
       s3Bucket: glean-zendesk-integration
       s3Key: glean/ZendeskGleanWebhookFunction/v1.0.16-ZendeskGleanWebhookFunction.zip
+      memorySize: 512
+      ephemeralStorageSize: 512
+      timeout: 60
       tags:
-        Name: ZendeskGleanWebhookFunction
         ApplicationName: ZendeskGleanWebhookFunction
         Environment: dev
-        Product: glean
+        Name: ZendeskGleanWebhookFunction
         Owner: techops
+        Product: glean
+      environment:
+        GLEAN_API_URL: https://vtex-be.glean.com/rest/api/v1/chat
+        GLEAN_FEEDBACK_URL: https://vtex-be.glean.com/rest/api/v1/feedback
+        GLEAN_TOKEN: E+NioSfTeuzMrEMg6ElNzPyA6kQcr+zrBsE3GClyFmc=
+        ZENDESK_API_TOKEN: RpfUAFN6AyQ5m00maAS66tN19q606KJjRJPdbPxA
+        ZENDESK_EMAIL: leonardo.guimaraes@vtex.com/token
+        ZENDESK_SUBDOMAIN: vtexhelp
+      layers: []
