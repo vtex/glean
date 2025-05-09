@@ -32,7 +32,7 @@
       when:
         - event: push
           path:
-            - .vtex/infrastructure/**
+            - .vtex/infrastructure/ZendeskGleanWebhookFunction
           source: branch
           regex: ^(?!main$).*
 
@@ -48,7 +48,7 @@
       when:
         - event: push
           path:
-            - .vtex/infrastructure/**
+            - .vtex/infrastructure/ZendeskGleanWebhookFunction
           source: branch
           regex: ^(main)$
       
