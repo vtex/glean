@@ -3,6 +3,9 @@ runtime: yaml
 resources:
   lambda:
     type: vtex:lambda:Lambda
+    options:
+      ignoreChanges:
+        - tags
     properties:
       architectures: []
       layers: []
