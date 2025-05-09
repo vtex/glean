@@ -27,8 +27,9 @@
         projectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction                           
         awsAccountId: '053131491888'
         awsRegion: us-east-1
+        awsRoleName: lambda-zendesk-glean
       runtime:
-        serviceAccountName: lambda-zendesk-glean
+        serviceAccountName: dk-cicd-iac
       when:
         - event: push
           path:
@@ -43,8 +44,9 @@
         projectPath: .vtex/infrastructure/lambda/ZendeskGleanWebhookFunction                           
         awsAccountId: '053131491888'
         awsRegion: us-east-1
+        awsRoleName: lambda-zendesk-glean
       runtime:
-        serviceAccountName: lambda-zendesk-glean
+        serviceAccountName: dk-cicd-iac
       when:
         - event: push
           path:
